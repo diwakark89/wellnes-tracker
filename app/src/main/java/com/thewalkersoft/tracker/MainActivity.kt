@@ -3,6 +3,7 @@ package com.thewalkersoft.tracker
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,12 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
 import com.thewalkersoft.tracker.ui.navigation.MainAppNavigation
 import com.thewalkersoft.tracker.ui.security.BiometricAuthHelper
 import com.thewalkersoft.tracker.ui.theme.CycleTrackerTheme
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
