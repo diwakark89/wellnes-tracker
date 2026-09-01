@@ -8,12 +8,13 @@ import androidx.compose.material.icons.filled.Mood
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    object Dashboard : Screen("dashboard", "Dashboard", Icons.Default.Favorite)
-    object History : Screen("history", "History", Icons.AutoMirrored.Filled.List)
-    object Symptoms : Screen("symptoms", "Symptoms", Icons.Default.Mood)
-    object Export : Screen("export", "Doctor Report", Icons.Default.Assessment)
+    data object Dashboard : Screen("dashboard", "Dashboard", Icons.Default.Favorite)
+    data object History : Screen("history", "History", Icons.AutoMirrored.Filled.List)
+    data object Symptoms : Screen("symptoms", "Symptoms", Icons.Default.Mood)
+    data object Export : Screen("export", "Doctor Report", Icons.Default.Assessment)
 
     companion object {
-        val items = listOf(Dashboard, History, Symptoms, Export)
+        val items: List<Screen>
+            get() = listOf(Dashboard, History, Symptoms, Export)
     }
 }
