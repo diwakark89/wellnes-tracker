@@ -24,6 +24,16 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun LogPeriodBottomSheet(
+    initialStartDate: LocalDate = LocalDate.now(),
+    initialEndDate: LocalDate? = null,
+    initialFlow: String? = "MEDIUM",
+    initialNotes: String? = null,
+    initialIsPostpartumReset: Boolean = false,
+    initialBbt: Float? = null,
+    initialCramps: Int? = null,
+    initialMood: String? = null,
+    initialOvulation: String? = null,
+    isEditMode: Boolean = false,
     onDismiss: () -> Unit,
     onSave: (
         startDate: LocalDate,
@@ -39,17 +49,17 @@ fun LogPeriodBottomSheet(
 ) {
     val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    var startDate by remember { mutableStateOf(LocalDate.now()) }
-    var endDate by remember { mutableStateOf<LocalDate?>(null) }
-    var flowIntensity by remember { mutableStateOf("MEDIUM") }
-    var notes by remember { mutableStateOf("") }
-    var isPostpartumReset by remember { mutableStateOf(false) }
+    var startDate by remember(initialStartDate) { mutableStateOf(initialStartDate) }
+    var endDate by remember(initialEndDate) { mutableStateOf(initialEndDate) }
+    var flowIntensity by remember(initialFlow) { mutableStateOf(initialFlow ?: "MEDIUM") }
+    var notes by remember(initialNotes) { mutableStateOf(initialNotes ?: "") }
+    var isPostpartumReset by remember(initialIsPostpartumReset) { mutableStateOf(initialIsPostpartumReset) }
 
     // Symptoms
-    var bbtInput by remember { mutableStateOf("") }
-    var crampsSeverity by remember { mutableStateOf<Int?>(null) }
-    var selectedMood by remember { mutableStateOf<String?>(null) }
-    var ovulationResult by remember { mutableStateOf<String?>(null) }
+    var bbtInput by remember(initialBbt) { mutableStateOf(initialBbt?.toString() ?: "") }
+    var crampsSeverity by remember(initialCramps) { mutableStateOf(initialCramps) }
+    var selectedMood by remember(initialMood) { mutableStateOf(initialMood) }
+    var ovulationResult by remember(initialOvulation) { mutableStateOf(initialOvulation) }
 
     // Date Picker Dialog states
     var showStartDatePicker by remember { mutableStateOf(false) }
@@ -77,7 +87,7 @@ fun LogPeriodBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Log Period & Symptoms",
+                    text = if (isEditMode) "Edit Period & Symptoms" else "Log Period & Symptoms",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
@@ -297,9 +307,10 @@ fun LogPeriodBottomSheet(
             Button(
                 onClick = {
                     val bbtVal = bbtInput.toFloatOrNull()
+                    val validEndDate = if (endDate != null && endDate!!.isBefore(startDate)) startDate else endDate
                     onSave(
                         startDate,
-                        endDate,
+                        validEndDate,
                         flowIntensity,
                         notes.ifBlank { null },
                         isPostpartumReset,
@@ -317,7 +328,7 @@ fun LogPeriodBottomSheet(
             ) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Save Log Entry", fontWeight = FontWeight.Bold)
+                Text(if (isEditMode) "Update Entry" else "Save Log Entry", fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -333,7 +344,11 @@ fun LogPeriodBottomSheet(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            startDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                            val newStart = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                            startDate = newStart
+                            if (endDate != null && endDate!!.isBefore(newStart)) {
+                                endDate = newStart
+                            }
                         }
                         showStartDatePicker = false
                     }
@@ -358,7 +373,8 @@ fun LogPeriodBottomSheet(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            endDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                            val selectedEnd = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+                            endDate = if (selectedEnd.isBefore(startDate)) startDate else selectedEnd
                         }
                         showEndDatePicker = false
                     }

@@ -3,6 +3,7 @@ package com.thewalkersoft.tracker.ui.history.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.WaterDrop
@@ -14,16 +15,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.thewalkersoft.tracker.domain.model.CycleRecord
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CycleHistoryItem(
     record: CycleRecord,
+    onClick: () -> Unit,
     onDeleteClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
 
     Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
@@ -79,13 +84,30 @@ fun CycleHistoryItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
+                FlowRow(
+                    modifier = Modifier.weight(1f),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    if (record.endDate != null) {
+                        val durationDays = ChronoUnit.DAYS.between(record.startDate, record.endDate) + 1
+                        AssistChip(
+                            onClick = onClick,
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            label = { Text("$durationDays days period") }
+                        )
+                    }
+
                     record.flowIntensity?.let { flow ->
                         AssistChip(
-                            onClick = { },
+                            onClick = onClick,
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.WaterDrop,
@@ -100,7 +122,7 @@ fun CycleHistoryItem(
 
                     if (record.isPostpartumBaselineReset) {
                         AssistChip(
-                            onClick = { },
+                            onClick = onClick,
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.RestartAlt,

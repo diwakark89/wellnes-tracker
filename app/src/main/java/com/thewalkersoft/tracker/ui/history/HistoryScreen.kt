@@ -12,7 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.thewalkersoft.tracker.data.local.entity.SymptomLogEntity
+import com.thewalkersoft.tracker.domain.model.CycleRecord
 import com.thewalkersoft.tracker.ui.history.components.CycleHistoryItem
+import com.thewalkersoft.tracker.ui.logging.LogPeriodBottomSheet
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,6 +26,9 @@ fun HistoryScreen(
 ) {
     val cycles by viewModel.cycleRecords.collectAsState()
     var selectedLogIdForDelete by remember { mutableStateOf<Long?>(null) }
+    var editingRecord by remember { mutableStateOf<CycleRecord?>(null) }
+    var editingSymptom by remember { mutableStateOf<SymptomLogEntity?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -121,10 +128,54 @@ fun HistoryScreen(
                 items(cycles, key = { it.id }) { record ->
                     CycleHistoryItem(
                         record = record,
+                        onClick = {
+                            coroutineScope.launch {
+                                val symptom = viewModel.getSymptomForDate(record.startDate)
+                                editingSymptom = symptom
+                                editingRecord = record
+                            }
+                        },
                         onDeleteClick = { id -> selectedLogIdForDelete = id }
                     )
                 }
             }
+        }
+
+        // Edit Period & Symptoms Bottom Sheet
+        editingRecord?.let { record ->
+            LogPeriodBottomSheet(
+                initialStartDate = record.startDate,
+                initialEndDate = record.endDate,
+                initialFlow = record.flowIntensity ?: "MEDIUM",
+                initialNotes = record.notes,
+                initialIsPostpartumReset = record.isPostpartumBaselineReset,
+                initialBbt = editingSymptom?.basalBodyTemp,
+                initialCramps = editingSymptom?.crampsSeverity,
+                initialMood = editingSymptom?.mood,
+                initialOvulation = editingSymptom?.ovulationTestResult,
+                isEditMode = true,
+                onDismiss = {
+                    editingRecord = null
+                    editingSymptom = null
+                },
+                onSave = { startDate, endDate, flow, notes, isReset, bbt, cramps, mood, ovulation ->
+                    viewModel.updatePeriodAndSymptoms(
+                        periodId = record.id,
+                        originalStartDate = record.startDate,
+                        startDate = startDate,
+                        endDate = endDate,
+                        flowIntensity = flow,
+                        notes = notes,
+                        isPostpartumReset = isReset,
+                        bbt = bbt,
+                        cramps = cramps,
+                        mood = mood,
+                        ovulation = ovulation
+                    )
+                    editingRecord = null
+                    editingSymptom = null
+                }
+            )
         }
 
         // Delete Confirmation Dialog

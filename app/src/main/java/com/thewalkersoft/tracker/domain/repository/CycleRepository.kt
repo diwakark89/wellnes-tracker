@@ -11,6 +11,7 @@ interface CycleRepository {
     fun getAllPeriodLogs(): Flow<List<PeriodLogEntity>>
     fun getAllCycleRecords(): Flow<List<CycleRecord>>
     suspend fun getLatestPeriodLog(): PeriodLogEntity?
+    suspend fun getPeriodLogById(id: Long): PeriodLogEntity?
     suspend fun insertPeriodLog(log: PeriodLogEntity): Long
     suspend fun updatePeriodLog(log: PeriodLogEntity)
     suspend fun deletePeriodLog(log: PeriodLogEntity)
@@ -19,6 +20,7 @@ interface CycleRepository {
     fun getAllSymptoms(): Flow<List<SymptomLogEntity>>
     fun getSymptomsBetween(startDate: LocalDate, endDate: LocalDate): Flow<List<SymptomLogEntity>>
     fun getSymptomForDate(date: LocalDate): Flow<SymptomLogEntity?>
+    suspend fun getSymptomByDate(date: LocalDate): SymptomLogEntity?
     suspend fun insertSymptom(symptom: SymptomLogEntity): Long
     suspend fun updateSymptom(symptom: SymptomLogEntity)
     suspend fun deleteSymptomById(id: Long)

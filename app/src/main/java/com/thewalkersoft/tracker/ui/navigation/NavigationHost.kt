@@ -30,7 +30,7 @@ fun MainAppNavigation(
 ) {
     val navController: NavHostController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route ?: Screen.Dashboard.route
+    val currentRoute = navBackStackEntry?.destination?.route ?: Dashboard.route
 
     var showLoggingSheet by remember { mutableStateOf(false) }
 
@@ -44,7 +44,7 @@ fun MainAppNavigation(
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface
             ) {
-                Screen.items.forEach { screen ->
+                screenItems.forEach { screen ->
                     val selected = currentRoute == screen.route
                     NavigationBarItem(
                         selected = selected,
@@ -76,33 +76,33 @@ fun MainAppNavigation(
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Dashboard.route,
+            startDestination = Dashboard.route,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            composable(Screen.Dashboard.route) {
+            composable(Dashboard.route) {
                 DashboardScreen(
                     viewModel = dashboardViewModel,
-                    onNavigateToHistory = { navController.navigate(Screen.History.route) },
-                    onNavigateToSymptoms = { navController.navigate(Screen.Symptoms.route) },
+                    onNavigateToHistory = { navController.navigate(History.route) },
+                    onNavigateToSymptoms = { navController.navigate(Symptoms.route) },
                     onOpenLoggingSheet = { showLoggingSheet = true }
                 )
             }
 
-            composable(Screen.History.route) {
+            composable(History.route) {
                 HistoryScreen(
                     viewModel = historyViewModel
                 )
             }
 
-            composable(Screen.Symptoms.route) {
+            composable(Symptoms.route) {
                 SymptomsScreen(
                     viewModel = symptomsViewModel
                 )
             }
 
-            composable(Screen.Export.route) {
+            composable(Export.route) {
                 ExportScreen(
                     viewModel = exportViewModel
                 )

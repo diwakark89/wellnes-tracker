@@ -54,6 +54,8 @@ class CycleRepositoryImpl(
 
     override suspend fun getLatestPeriodLog(): PeriodLogEntity? = periodLogDao.getLatestLog()
 
+    override suspend fun getPeriodLogById(id: Long): PeriodLogEntity? = periodLogDao.getLogById(id)
+
     override suspend fun insertPeriodLog(log: PeriodLogEntity): Long = periodLogDao.insertLog(log)
 
     override suspend fun updatePeriodLog(log: PeriodLogEntity) {
@@ -77,6 +79,9 @@ class CycleRepositoryImpl(
 
     override fun getSymptomForDate(date: LocalDate): Flow<SymptomLogEntity?> =
         symptomLogDao.getSymptomForDateFlow(date)
+
+    override suspend fun getSymptomByDate(date: LocalDate): SymptomLogEntity? =
+        symptomLogDao.getSymptomForDate(date)
 
     override suspend fun insertSymptom(symptom: SymptomLogEntity): Long =
         symptomLogDao.insertSymptom(symptom)
