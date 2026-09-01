@@ -111,6 +111,10 @@ app/src/main/java/com/thewalkersoft/tracker/
 
 ## 4. Key Domain Logic: `CyclePredictorEngine`
 
+> [!NOTE]
+> For the complete technical and clinical specification with LaTeX mathematical formulas, architecture diagrams, and clinical justifications, refer to:
+> **[`docs/CYCLE_PREDICTION_ENGINE.md`](docs/CYCLE_PREDICTION_ENGINE.md)**
+
 The predictive logic in `CyclePredictorEngine.kt` is purpose-built to handle irregular cycles and postpartum transitions cleanly:
 
 ### 1. Spotting & Noise Suppression
