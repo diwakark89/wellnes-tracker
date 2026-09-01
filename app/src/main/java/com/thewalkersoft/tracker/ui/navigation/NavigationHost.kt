@@ -1,5 +1,10 @@
 package com.thewalkersoft.tracker.ui.navigation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -68,9 +73,15 @@ fun MainAppNavigation(
             }
         },
         floatingActionButton = {
-            QuickLogButton(
-                onClick = { showLoggingSheet = true }
-            )
+            AnimatedVisibility(
+                visible = currentRoute == Dashboard.route,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
+                QuickLogButton(
+                    onClick = { showLoggingSheet = true }
+                )
+            }
         },
         modifier = modifier
     ) { paddingValues ->

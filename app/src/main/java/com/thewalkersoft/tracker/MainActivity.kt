@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.thewalkersoft.tracker.ui.navigation.MainAppNavigation
 import com.thewalkersoft.tracker.ui.security.BiometricAuthHelper
 import com.thewalkersoft.tracker.ui.theme.CycleTrackerTheme
@@ -78,6 +79,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LockScreenPreview() {
+    CycleTrackerTheme {
+        LockScreen(
+            errorMessage = null,
+            onUnlockClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Lock Screen with Error")
+@Composable
+fun LockScreenErrorPreview() {
+    CycleTrackerTheme {
+        LockScreen(
+            errorMessage = "Biometric authentication failed. Please try again.",
+            onUnlockClick = {}
+        )
     }
 }
 

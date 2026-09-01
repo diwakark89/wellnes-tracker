@@ -66,22 +66,30 @@ class ExportViewModel(
     }
 
     fun shareReport(context: Context, uri: Uri) {
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "application/pdf"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_SUBJECT, "Menstrual Cycle & Health Clinical Report")
-            putExtra(Intent.EXTRA_TEXT, "Attached is my confidential menstrual cycle health report generated from Adaptive Cycle Tracker.")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        try {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                putExtra(Intent.EXTRA_SUBJECT, "Menstrual Cycle & Health Clinical Report")
+                putExtra(Intent.EXTRA_TEXT, "Attached is my confidential menstrual cycle health report generated from Adaptive Cycle Tracker.")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(Intent.createChooser(intent, "Share Clinical Report with Doctor"))
+        } catch (e: Exception) {
+            _exportState.value = ExportState.Error(e.localizedMessage ?: "Failed to share report")
         }
-        context.startActivity(Intent.createChooser(intent, "Share Clinical Report with Doctor"))
     }
 
     fun viewReport(context: Context, uri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/pdf")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        try {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/pdf")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(Intent.createChooser(intent, "Open Medical Report"))
+        } catch (e: Exception) {
+            _exportState.value = ExportState.Error(e.localizedMessage ?: "No application found to view PDF")
         }
-        context.startActivity(Intent.createChooser(intent, "Open Medical Report"))
     }
 
     fun resetExportState() {
