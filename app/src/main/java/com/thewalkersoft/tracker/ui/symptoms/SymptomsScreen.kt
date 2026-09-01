@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.thewalkersoft.tracker.data.local.entity.SymptomLogEntity
+import com.thewalkersoft.tracker.ui.symptoms.components.BbtTrendChart
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -75,9 +76,25 @@ fun SymptomsScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
                 contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp)
             ) {
+                // 1. BBT Trend Curve Chart
+                item {
+                    BbtTrendChart(symptoms = symptoms)
+                }
+
+                item {
+                    Text(
+                        text = "Daily Health Log History",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                    )
+                }
+
+                // 2. Symptom Cards
                 items(symptoms, key = { it.id }) { symptom ->
                     SymptomCard(
                         symptom = symptom,
@@ -122,7 +139,7 @@ private fun SymptomCard(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -138,7 +155,7 @@ private fun SymptomCard(
             ) {
                 Text(
                     text = symptom.logDate.format(dateFormatter),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -173,7 +190,8 @@ private fun SymptomCard(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         },
-                        label = { Text("Mood: $mood") }
+                        label = { Text("Mood: $mood", fontWeight = FontWeight.Medium) },
+                        shape = RoundedCornerShape(10.dp)
                     )
                 }
 
@@ -188,7 +206,8 @@ private fun SymptomCard(
                                 tint = MaterialTheme.colorScheme.secondary
                             )
                         },
-                        label = { Text("Cramps: $cramps / 5") }
+                        label = { Text("Cramps: $cramps / 5", fontWeight = FontWeight.Medium) },
+                        shape = RoundedCornerShape(10.dp)
                     )
                 }
 
@@ -203,7 +222,8 @@ private fun SymptomCard(
                                 tint = MaterialTheme.colorScheme.tertiary
                             )
                         },
-                        label = { Text("BBT: $bbt °C") }
+                        label = { Text("BBT: $bbt °C", fontWeight = FontWeight.Medium) },
+                        shape = RoundedCornerShape(10.dp)
                     )
                 }
 
@@ -218,7 +238,8 @@ private fun SymptomCard(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         },
-                        label = { Text("LH Test: $ov") }
+                        label = { Text("LH Test: $ov", fontWeight = FontWeight.Medium) },
+                        shape = RoundedCornerShape(10.dp)
                     )
                 }
             }

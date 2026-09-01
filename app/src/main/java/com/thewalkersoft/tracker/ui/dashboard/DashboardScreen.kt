@@ -33,6 +33,7 @@ fun DashboardScreen(
     onNavigateToHistory: () -> Unit,
     onNavigateToSymptoms: () -> Unit,
     onOpenLoggingSheet: () -> Unit,
+    onSelectDate: (LocalDate) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -45,6 +46,7 @@ fun DashboardScreen(
         onQuickLogPeriodStartedToday = { viewModel.quickLogPeriodStartedToday() },
         onNavigateToHistory = onNavigateToHistory,
         onOpenLoggingSheet = onOpenLoggingSheet,
+        onSelectDate = onSelectDate,
         modifier = modifier
     )
 }
@@ -59,6 +61,7 @@ fun DashboardContent(
     onQuickLogPeriodStartedToday: () -> Unit,
     onNavigateToHistory: () -> Unit,
     onOpenLoggingSheet: () -> Unit,
+    onSelectDate: (LocalDate) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -122,7 +125,8 @@ fun DashboardContent(
                     currentRecord = uiState.currentCycleRecord,
                     prediction = uiState.prediction,
                     timelineDays = uiState.timelineDays,
-                    onOpenLoggingSheet = onOpenLoggingSheet
+                    onOpenLoggingSheet = onOpenLoggingSheet,
+                    onSelectDate = onSelectDate
                 )
             }
 

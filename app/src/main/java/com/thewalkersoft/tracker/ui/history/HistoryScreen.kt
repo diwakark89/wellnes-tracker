@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.thewalkersoft.tracker.data.local.entity.SymptomLogEntity
 import com.thewalkersoft.tracker.domain.model.CycleRecord
 import com.thewalkersoft.tracker.ui.history.components.CycleHistoryItem
+import com.thewalkersoft.tracker.ui.history.components.CycleLengthChart
 import com.thewalkersoft.tracker.ui.logging.LogPeriodBottomSheet
 import kotlinx.coroutines.launch
 
@@ -81,13 +82,19 @@ fun HistoryScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
                 contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp)
             ) {
+                // 1. Cycle Length Bar Chart
                 item {
-                    // Summary Stats Card
+                    CycleLengthChart(cycles = cycles)
+                }
+
+                // 2. Summary Stats Card
+                item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(22.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                     ) {
                         Row(
@@ -110,15 +117,15 @@ fun HistoryScreen(
                             } else 0
 
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("Total Logs", style = MaterialTheme.typography.labelSmall)
+                                Text("Total Logs", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text("${cycles.size}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("Avg Length", style = MaterialTheme.typography.labelSmall)
+                                Text("Avg Length", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(if (avgDays > 0) "$avgDays d" else "--", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("Range (Min-Max)", style = MaterialTheme.typography.labelSmall)
+                                Text("Range (Min-Max)", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(if (minDays > 0) "$minDays - $maxDays d" else "--", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                             }
                         }

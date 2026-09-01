@@ -38,6 +38,7 @@ fun MainAppNavigation(
     val currentRoute = navBackStackEntry?.destination?.route ?: Dashboard.route
 
     var showLoggingSheet by remember { mutableStateOf(false) }
+    var loggingInitialDate by remember { mutableStateOf<java.time.LocalDate?>(null) }
 
     val dashboardViewModel: DashboardViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val historyViewModel: HistoryViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -79,7 +80,10 @@ fun MainAppNavigation(
                 exit = fadeOut() + scaleOut()
             ) {
                 QuickLogButton(
-                    onClick = { showLoggingSheet = true }
+                    onClick = {
+                        loggingInitialDate = null
+                        showLoggingSheet = true
+                    }
                 )
             }
         },
@@ -97,7 +101,14 @@ fun MainAppNavigation(
                     viewModel = dashboardViewModel,
                     onNavigateToHistory = { navController.navigate(History.route) },
                     onNavigateToSymptoms = { navController.navigate(Symptoms.route) },
-                    onOpenLoggingSheet = { showLoggingSheet = true }
+                    onOpenLoggingSheet = {
+                        loggingInitialDate = null
+                        showLoggingSheet = true
+                    },
+                    onSelectDate = { selectedDate ->
+                        loggingInitialDate = selectedDate
+                        showLoggingSheet = true
+                    }
                 )
             }
 
@@ -122,6 +133,7 @@ fun MainAppNavigation(
 
         if (showLoggingSheet) {
             LogPeriodBottomSheet(
+                initialStartDate = loggingInitialDate ?: java.time.LocalDate.now(),
                 onDismiss = { showLoggingSheet = false },
                 onSave = { startDate, endDate, flow, notes, isReset, bbt, cramps, mood, ovulation ->
                     dashboardViewModel.savePeriodAndSymptoms(

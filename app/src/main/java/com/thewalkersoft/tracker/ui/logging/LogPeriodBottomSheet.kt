@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.thewalkersoft.tracker.ui.theme.Rose40
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -70,15 +71,16 @@ fun LogPeriodBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = modalBottomSheetState,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         containerColor = MaterialTheme.colorScheme.surface
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = 20.dp)
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 32.dp)
+                .padding(bottom = 36.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Header
             Row(
@@ -86,224 +88,347 @@ fun LogPeriodBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = if (isEditMode) "Edit Period & Symptoms" else "Log Period & Symptoms",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
+                Column {
+                    Text(
+                        text = if (isEditMode) "Edit Cycle & Log" else "Log Period & Symptoms",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "100% private and on-device",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 IconButton(onClick = onDismiss) {
                     Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 1. Period Start Date Picker
-            Text(
-                text = "Period Dates",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OutlinedCard(
-                    onClick = { showStartDatePicker = true },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text("Start Date", style = MaterialTheme.typography.labelSmall)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = startDate.format(dateFormatter),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
-
-                OutlinedCard(
-                    onClick = { showEndDatePicker = true },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text("End Date (Optional)", style = MaterialTheme.typography.labelSmall)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = endDate?.format(dateFormatter) ?: "Ongoing",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 2. Flow Intensity
-            Text(
-                text = "Flow Intensity",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            val flows = listOf("SPOT" to "Spotting", "LIGHT" to "Light", "MEDIUM" to "Medium", "HEAVY" to "Heavy")
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                flows.forEach { (key, label) ->
-                    FilterChip(
-                        selected = flowIntensity == key,
-                        onClick = { flowIntensity = key },
-                        label = { Text(label, fontSize = 12.sp) },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 3. Postpartum Reset Toggle Card
+            // 1. Period Details Section Card
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
+                shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.WaterDrop,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Postpartum Baseline Reset",
-                            style = MaterialTheme.typography.titleSmall,
+                            text = "Period Dates & Flow",
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        Text(
-                            text = "Isolates calculation from older pre-pregnancy/birth cycles.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedCard(
+                            onClick = { showStartDatePicker = true },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text("Start Date", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = startDate.format(dateFormatter),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+
+                        OutlinedCard(
+                            onClick = { showEndDatePicker = true },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text("End Date (Optional)", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = endDate?.format(dateFormatter) ?: "Ongoing...",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (endDate != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+
+                    Text("Flow Intensity", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+                    val flows = listOf("SPOT" to "Spotting", "LIGHT" to "Light", "MEDIUM" to "Medium", "HEAVY" to "Heavy")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        flows.forEach { (key, label) ->
+                            FilterChip(
+                                selected = flowIntensity == key,
+                                onClick = { flowIntensity = key },
+                                label = { Text(label, fontSize = 11.sp, fontWeight = if (flowIntensity == key) FontWeight.Bold else FontWeight.Normal) },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                        }
+                    }
+
+                    // Postpartum switch
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Postpartum Baseline Reset",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Isolates from older pre-pregnancy baseline.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 11.sp
+                            )
+                        }
+                        Switch(
+                            checked = isPostpartumReset,
+                            onCheckedChange = { isPostpartumReset = it }
                         )
                     }
-                    Switch(
-                        checked = isPostpartumReset,
-                        onCheckedChange = { isPostpartumReset = it }
-                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            HorizontalDivider()
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 4. Symptoms Section
-            Text(
-                text = "Daily Symptoms (Optional)",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Mood selection
-            Text("Mood", style = MaterialTheme.typography.labelMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            val moods = listOf("Happy", "Calm", "Tired", "Irritable", "Anxious", "Sad")
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            // 2. Physical & Pain Severity Card
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                moods.forEach { mood ->
-                    FilterChip(
-                        selected = selectedMood == mood,
-                        onClick = { selectedMood = if (selectedMood == mood) null else mood },
-                        label = { Text(mood) }
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Healing,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Cramps / Pain Level",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        if (crampsSeverity != null) {
+                            Text(
+                                text = "$crampsSeverity / 5",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        val isNone = crampsSeverity == null
+                        FilterChip(
+                            selected = isNone,
+                            onClick = { crampsSeverity = null },
+                            label = { Text("None", fontSize = 10.sp) },
+                            modifier = Modifier.weight(1.1f),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        (1..5).forEach { level ->
+                            FilterChip(
+                                selected = crampsSeverity == level,
+                                onClick = { crampsSeverity = if (crampsSeverity == level) null else level },
+                                label = { Text("$level★", fontSize = 11.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center, modifier = Modifier.fillMaxWidth()) },
+                                modifier = Modifier.weight(0.9f),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                        }
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Cramps severity
-            Text("Cramps Severity (1 to 5)", style = MaterialTheme.typography.labelMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // 3. Mood & Energy Card
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                (1..5).forEach { rating ->
-                    FilterChip(
-                        selected = crampsSeverity == rating,
-                        onClick = { crampsSeverity = if (crampsSeverity == rating) null else rating },
-                        label = { Text("$rating ★") },
-                        modifier = Modifier.weight(1f)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Mood,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Mood & Emotions",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    val moods = listOf(
+                        "Happy" to "😊",
+                        "Calm" to "😌",
+                        "Tired" to "🥱",
+                        "Irritable" to "😣",
+                        "Anxious" to "😰",
+                        "Sad" to "😢"
                     )
+
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        moods.forEach { (mood, emoji) ->
+                            val isSelected = selectedMood == mood
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = { selectedMood = if (isSelected) null else mood },
+                                label = { Text("$emoji $mood", fontSize = 12.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                        }
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Basal Body Temperature
-            OutlinedTextField(
-                value = bbtInput,
-                onValueChange = { bbtInput = it },
-                label = { Text("Basal Body Temperature (°C / °F)") },
-                placeholder = { Text("e.g. 36.6") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Thermostat, contentDescription = null)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Ovulation Test Result
-            Text("Ovulation (LH) Test Result", style = MaterialTheme.typography.labelMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            val ovResults = listOf("NEGATIVE" to "Negative", "POSITIVE" to "Positive", "PEAK" to "Peak LH")
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // 4. Biomarkers & Fertility Card
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                ovResults.forEach { (key, label) ->
-                    FilterChip(
-                        selected = ovulationResult == key,
-                        onClick = { ovulationResult = if (ovulationResult == key) null else key },
-                        label = { Text(label) },
-                        modifier = Modifier.weight(1f)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Thermostat,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Biomarkers & Fertility",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    OutlinedTextField(
+                        value = bbtInput,
+                        onValueChange = { bbtInput = it },
+                        label = { Text("Basal Body Temperature (°C / °F)") },
+                        placeholder = { Text("e.g. 36.6") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Default.Thermostat, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        }
+                    )
+
+                    Text("Ovulation (LH) Test Result", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+                    val ovResults = listOf("NEGATIVE" to "Negative", "POSITIVE" to "Positive", "PEAK" to "Peak LH")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ovResults.forEach { (key, label) ->
+                            FilterChip(
+                                selected = ovulationResult == key,
+                                onClick = { ovulationResult = if (ovulationResult == key) null else key },
+                                label = { Text(label, fontSize = 12.sp, fontWeight = if (ovulationResult == key) FontWeight.Bold else FontWeight.Normal) },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 5. Notes Card
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.EditNote,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Personal Notes",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    OutlinedTextField(
+                        value = notes,
+                        onValueChange = { notes = it },
+                        placeholder = { Text("Add any extra observations or symptoms...") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        maxLines = 3
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Notes
-            OutlinedTextField(
-                value = notes,
-                onValueChange = { notes = it },
-                label = { Text("Personal Notes") },
-                placeholder = { Text("Add any extra observations...") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 3
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Save Button
+            // Save Action Button
             Button(
                 onClick = {
                     val bbtVal = bbtInput.toFloatOrNull()
@@ -324,11 +449,15 @@ fun LogPeriodBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                Icon(imageVector = Icons.Default.Check, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(if (isEditMode) "Update Entry" else "Save Log Entry", fontWeight = FontWeight.Bold)
+                Text(
+                    text = if (isEditMode) "Update Entry" else "Save Entry",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
             }
         }
     }
@@ -352,7 +481,7 @@ fun LogPeriodBottomSheet(
                         }
                         showStartDatePicker = false
                     }
-                ) { Text("OK") }
+                ) { Text("OK", fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
                 TextButton(onClick = { showStartDatePicker = false }) { Text("Cancel") }
@@ -378,7 +507,7 @@ fun LogPeriodBottomSheet(
                         }
                         showEndDatePicker = false
                     }
-                ) { Text("OK") }
+                ) { Text("OK", fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
                 TextButton(

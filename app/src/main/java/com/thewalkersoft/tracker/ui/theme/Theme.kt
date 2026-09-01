@@ -18,25 +18,43 @@ import androidx.core.view.WindowCompat
 private val DarkColorScheme = darkColorScheme(
     primary = Rose80,
     onPrimary = Rose20,
-    primaryContainer = Rose40,
+    primaryContainer = Rose20,
+    onPrimaryContainer = Rose80,
     secondary = Berry80,
     onSecondary = Berry20,
+    secondaryContainer = Berry20,
+    onSecondaryContainer = Berry80,
     tertiary = Lavender80,
+    onTertiary = Lavender20,
     background = SurfaceDark,
+    onBackground = Color(0xFFF3EDEE),
     surface = CardBackgroundDark,
-    surfaceVariant = Color(0xFF383033)
+    onSurface = Color(0xFFF3EDEE),
+    surfaceVariant = Color(0xFF332A2D),
+    onSurfaceVariant = Color(0xFFD6C2C7),
+    outline = Color(0xFF4A3E42),
+    outlineVariant = Color(0xFF362C30)
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Rose40,
     onPrimary = Color.White,
-    primaryContainer = Rose80,
+    primaryContainer = Color(0xFFFFECEF),
+    onPrimaryContainer = Rose20,
     secondary = Berry40,
     onSecondary = Color.White,
+    secondaryContainer = Color(0xFFFDE8F3),
+    onSecondaryContainer = Berry20,
     tertiary = Lavender40,
+    onTertiary = Color.White,
     background = SurfaceLight,
+    onBackground = Color(0xFF22191B),
     surface = CardBackgroundLight,
-    surfaceVariant = Color(0xFFF6EAEE)
+    onSurface = Color(0xFF22191B),
+    surfaceVariant = Color(0xFFFBF0F3),
+    onSurfaceVariant = Color(0xFF75656A),
+    outline = Color(0xFFE8D7DC),
+    outlineVariant = Color(0xFFF3E7EA)
 )
 
 @Composable

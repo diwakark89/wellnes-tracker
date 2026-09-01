@@ -26,14 +26,28 @@ val Coral20 = Color(0xFF802011)
 val Gold80 = Color(0xFFFFDF99)
 val Gold40 = Color(0xFFB58500)
 
-val SurfaceLight = Color(0xFFFFF8F8)
-val SurfaceDark = Color(0xFF1E1A1B)
+val SurfaceLight = Color(0xFFFFF9FA)
+val SurfaceDark = Color(0xFF181314)
 val CardBackgroundLight = Color(0xFFFFFFFF)
-val CardBackgroundDark = Color(0xFF2B2527)
+val CardBackgroundDark = Color(0xFF231D1F)
 
 // Status Colors
-val FollicularColor = Color(0xFF4A90E2)
+val FollicularColor = Color(0xFF3F82E8)
 val OvulationColor = Color(0xFF9C27B0)
-val LutealColor = Color(0xFFE91E63)
-val WindowActiveColor = Color(0xFFE65100)
-val OverdueColor = Color(0xFFC62828)
+val LutealColor = Color(0xFFE54A7A)
+val WindowActiveColor = Color(0xFFF07126)
+val OverdueColor = Color(0xFFD32F2F)
+
+// Chart & Wellness Visualization Tokens
+val ChartBarRegular = Color(0xFFD83B5E)
+val ChartBarVariation = Color(0xFFE8A0B2)
+val ChartBaselineLine = Color(0xFF9C4174)
+val ChartGridLineLight = Color(0x1F000000)
+val ChartGridLineDark = Color(0x1FFFFFFF)
+val BbtCurveColor = Color(0xFF6750A4)
+val BbtFillColor = Color(0x286750A4)
+
+// Organic Soft Glows
+val GlowBlush = Color(0x28D83B5E)
+val GlowLavender = Color(0x286750A4)
+val GlowSage = Color(0x28437A5C)

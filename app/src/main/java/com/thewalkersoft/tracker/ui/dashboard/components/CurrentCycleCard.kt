@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -30,6 +32,7 @@ import com.thewalkersoft.tracker.domain.model.CycleStatus
 import com.thewalkersoft.tracker.domain.model.PredictionResult
 import com.thewalkersoft.tracker.ui.dashboard.DayTimelineItem
 import com.thewalkersoft.tracker.ui.theme.*
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.cos
 import kotlin.math.sin
@@ -40,11 +43,12 @@ fun CurrentCycleCard(
     prediction: PredictionResult?,
     timelineDays: List<DayTimelineItem> = emptyList(),
     onOpenLoggingSheet: () -> Unit = {},
+    onSelectDate: (LocalDate) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(26.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -63,18 +67,18 @@ fun CurrentCycleCard(
                 val cycleDay = prediction.currentCycleDay
                 val status = prediction.status
                 val (statusColor, statusBgColor, statusIcon) = when (status) {
-                    CycleStatus.FOLLICULAR -> Triple(FollicularColor, FollicularColor.copy(alpha = 0.12f), Icons.Default.Spa)
-                    CycleStatus.OVULATION_WINDOW -> Triple(OvulationColor, OvulationColor.copy(alpha = 0.12f), Icons.Default.AutoAwesome)
-                    CycleStatus.LUTEAL -> Triple(LutealColor, LutealColor.copy(alpha = 0.12f), Icons.Default.Bedtime)
-                    CycleStatus.PREDICTION_WINDOW_ACTIVE -> Triple(WindowActiveColor, WindowActiveColor.copy(alpha = 0.12f), Icons.Default.NotificationsActive)
-                    CycleStatus.OVERDUE -> Triple(OverdueColor, OverdueColor.copy(alpha = 0.12f), Icons.Default.Warning)
+                    CycleStatus.FOLLICULAR -> Triple(FollicularColor, FollicularColor.copy(alpha = 0.14f), Icons.Default.Spa)
+                    CycleStatus.OVULATION_WINDOW -> Triple(OvulationColor, OvulationColor.copy(alpha = 0.14f), Icons.Default.AutoAwesome)
+                    CycleStatus.LUTEAL -> Triple(LutealColor, LutealColor.copy(alpha = 0.14f), Icons.Default.Bedtime)
+                    CycleStatus.PREDICTION_WINDOW_ACTIVE -> Triple(WindowActiveColor, WindowActiveColor.copy(alpha = 0.14f), Icons.Default.NotificationsActive)
+                    CycleStatus.OVERDUE -> Triple(OverdueColor, OverdueColor.copy(alpha = 0.14f), Icons.Default.Warning)
                 }
 
                 // Phase Status Pill Badge
                 Surface(
                     shape = RoundedCornerShape(50),
                     color = statusBgColor,
-                    modifier = Modifier.padding(bottom = 12.dp)
+                    modifier = Modifier.padding(bottom = 8.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -104,18 +108,34 @@ fun CurrentCycleCard(
                     label = "cycle_progress"
                 )
 
-                // Multi-Phase Circular Wheel Visualizer
+                // Multi-Phase Circular Wheel with Organic Glow
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(190.dp)
-                        .padding(8.dp)
+                        .size(210.dp)
+                        .padding(6.dp)
                 ) {
-                    Canvas(modifier = Modifier.fillMaxSize().padding(10.dp)) {
-                        val strokeWidth = 11.dp.toPx()
+                    Canvas(modifier = Modifier.fillMaxSize().padding(12.dp)) {
+                        val strokeWidth = 12.dp.toPx()
                         val diameter = size.minDimension
                         val arcSize = Size(diameter, diameter)
                         val arcOffset = Offset((size.width - diameter) / 2f, (size.height - diameter) / 2f)
+                        val center = Offset(size.width / 2f, size.height / 2f)
+
+                        // 0. Soft Ambient Background Glow
+                        drawCircle(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    statusColor.copy(alpha = 0.15f),
+                                    statusColor.copy(alpha = 0.04f),
+                                    Color.Transparent
+                                ),
+                                center = center,
+                                radius = diameter * 0.55f
+                            ),
+                            radius = diameter * 0.55f,
+                            center = center
+                        )
 
                         // 1. Draw segmented background track representing phases
                         val pPeak = targetDays.toFloat()
@@ -126,23 +146,23 @@ fun CurrentCycleCard(
                         val menstrualSweep = (mDays / pPeak) * 360f
                         val follicularSweep = ((ovStartDays - mDays) / pPeak) * 360f
                         val ovulationSweep = ((ovEndDays - ovStartDays) / pPeak) * 360f
-                        val lutealSweep = 360f - (menstrualSweep + follicularSweep + ovulationSweep)
+                        val lutealSweep = (360f - (menstrualSweep + follicularSweep + ovulationSweep)).coerceAtLeast(0f)
 
                         // Base track with subtle colors
                         var curAngle = -90f
                         drawArc(
-                            color = Rose40.copy(alpha = 0.22f),
+                            color = Rose40.copy(alpha = 0.25f),
                             startAngle = curAngle,
                             sweepAngle = menstrualSweep,
                             useCenter = false,
                             topLeft = arcOffset,
                             size = arcSize,
-                            style = Stroke(width = strokeWidth)
+                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                         )
                         curAngle += menstrualSweep
 
                         drawArc(
-                            color = FollicularColor.copy(alpha = 0.22f),
+                            color = FollicularColor.copy(alpha = 0.25f),
                             startAngle = curAngle,
                             sweepAngle = follicularSweep,
                             useCenter = false,
@@ -153,7 +173,7 @@ fun CurrentCycleCard(
                         curAngle += follicularSweep
 
                         drawArc(
-                            color = OvulationColor.copy(alpha = 0.25f),
+                            color = OvulationColor.copy(alpha = 0.28f),
                             startAngle = curAngle,
                             sweepAngle = ovulationSweep,
                             useCenter = false,
@@ -164,20 +184,20 @@ fun CurrentCycleCard(
                         curAngle += ovulationSweep
 
                         drawArc(
-                            color = LutealColor.copy(alpha = 0.22f),
+                            color = LutealColor.copy(alpha = 0.25f),
                             startAngle = curAngle,
                             sweepAngle = lutealSweep,
                             useCenter = false,
                             topLeft = arcOffset,
                             size = arcSize,
-                            style = Stroke(width = strokeWidth)
+                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                         )
 
                         // 2. Draw Active Progress Arc
                         drawArc(
                             color = statusColor,
                             startAngle = -90f,
-                            sweepAngle = animatedProgress * 360f,
+                            sweepAngle = (animatedProgress * 360f).coerceAtLeast(1f),
                             useCenter = false,
                             topLeft = arcOffset,
                             size = arcSize,
@@ -194,49 +214,57 @@ fun CurrentCycleCard(
 
                         drawCircle(
                             color = Color.White,
-                            radius = 6.dp.toPx(),
+                            radius = 7.dp.toPx(),
                             center = Offset(headX, headY)
                         )
                         drawCircle(
                             color = statusColor,
-                            radius = 4.dp.toPx(),
+                            radius = 4.5.dp.toPx(),
                             center = Offset(headX, headY)
                         )
                     }
 
-                    // Center Labels & Day Counter
+                    // Center Day Counter & Prediction Countdown
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
                             text = "CYCLE DAY",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.2.sp
+                            letterSpacing = 1.4.sp
                         )
                         Text(
                             text = "$cycleDay",
-                            style = MaterialTheme.typography.displayLarge.copy(fontSize = 44.sp),
+                            style = MaterialTheme.typography.displayLarge.copy(fontSize = 46.sp),
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         val daysRemaining = targetDays - cycleDay
                         val subText = when {
-                            daysRemaining > 0 -> "Period in ~$daysRemaining days"
-                            daysRemaining == 0 -> "Period expected today"
-                            else -> "${-daysRemaining} days past target"
+                            daysRemaining > 0 -> "Period in ~$daysRemaining d"
+                            daysRemaining == 0 -> "Period due today"
+                            else -> "${-daysRemaining} d overdue"
                         }
-                        Text(
-                            text = subText,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (daysRemaining < 0) OverdueColor else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (daysRemaining < 0) OverdueColor.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                            modifier = Modifier.padding(top = 2.dp)
+                        ) {
+                            Text(
+                                text = subText,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (daysRemaining < 0) OverdueColor else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            )
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Phase Legend Mini Strip
                 Row(
@@ -255,15 +283,25 @@ fun CurrentCycleCard(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 7-Day Horizontal Calendar Timeline Strip
+                // Interactive 7-Day Calendar Timeline Strip
                 if (timelineDays.isNotEmpty()) {
-                    Text(
-                        text = "Cycle Timeline",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Interactive Timeline",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Tap day to log",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Row(
@@ -271,14 +309,18 @@ fun CurrentCycleCard(
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         timelineDays.forEach { item ->
-                            DayTimelineCard(item = item, modifier = Modifier.weight(1f))
+                            DayTimelineCard(
+                                item = item,
+                                onClick = { onSelectDate(item.date) },
+                                modifier = Modifier.weight(1f)
+                            )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -357,26 +399,29 @@ private fun LegendItem(color: Color, label: String) {
 @Composable
 private fun DayTimelineCard(
     item: DayTimelineItem,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val bg = if (item.isToday) {
-        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)
     } else {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
     }
 
     val borderModifier = if (item.isToday) {
-        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
+        Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(14.dp))
     } else {
         Modifier
     }
 
     Surface(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(14.dp),
         color = bg,
         modifier = modifier
             .then(borderModifier)
-            .height(68.dp)
+            .height(72.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier
@@ -394,7 +439,7 @@ private fun DayTimelineCard(
 
             Text(
                 text = "${item.dayOfMonth}",
-                fontSize = 14.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = if (item.isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
             )
@@ -463,8 +508,8 @@ private fun EmptyOnboardingView(
             onClick = onOpenLoggingSheet,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(14.dp)
+                .height(50.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
