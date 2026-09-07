@@ -404,7 +404,37 @@ Always run Gradle commands via `./gradlew` from the project root:
 
 ---
 
-## 10. Agent Verification Checklist Before Concluding Work
+## 10. Mandatory Feature Documentation & SRS Synchronization Protocol
+
+> [!IMPORTANT]
+> **Strict Engineering & Agent Mandate**:
+> Modifying application code without synchronizing its corresponding documentation constitutes an incomplete, non-compliant task. Every pull request or code modification must update all affected feature documents in `docs/features/<feature>/` and, where applicable, update the formal Software Requirements Specification in `docs/SRS.md`.
+
+### 1. Feature Documentation Update Triggers (`docs/features/<feature>/`)
+Whenever any change touches an application feature, the engineer or AI agent **must update all 3 canonical documents** for that feature:
+
+| Code Modification Trigger | Required Document Update Action | Target Document(s) |
+| :--- | :--- | :--- |
+| **UI / Compose Screen / Component** | Update *Current User Experience* section to reflect observable changes; update *Presentation Layer* table in code touch map. | `README.md`<br>`code-touch-map.md` |
+| **ViewModel / StateFlow / UiState** | Update *State & Lifecycle Layer* table with new/modified properties; update *UDF Sequence* with changed state emissions and thread dispatchers. | `code-touch-map.md`<br>`data-flow.md` |
+| **Domain Engine / Model / Math** | Update *Shared Business Rules* with new formulas, intervals, or validation logic; update *Domain Layer* table in code touch map; update `docs/CYCLE_PREDICTION_ENGINE.md` if cycle math changed. | `README.md`<br>`code-touch-map.md`<br>`docs/CYCLE_PREDICTION_ENGINE.md` |
+| **Room Entity / DAO / Migrations** | Update *Related Database Objects* schema table; update *Data Layer* table in code touch map; update *Normal Sequence* with persistence handoffs. | `README.md`<br>`code-touch-map.md`<br>`data-flow.md` |
+| **Platform / OS Service (Biometrics, PDF)** | Update *Platform Subsystems* table, permissions, or scoped storage boundaries. | `README.md`<br>`code-touch-map.md`<br>`data-flow.md` |
+
+### 2. Software Requirements Specification (SRS) Triggers (`docs/SRS.md`)
+Whenever code changes introduce, modify, or deprecate functional capabilities, the formal SRS in `docs/SRS.md` **must be synchronized immediately**:
+
+| Requirement Change Event | Mandatory SRS Update Action | Relevant SRS Section |
+| :--- | :--- | :--- |
+| **New Business / Health Capability** | Add a new formal functional requirement `REQ-F-XX` detailing description, inputs, processing steps, and outputs. | `docs/SRS.md` — Section 3.1 |
+| **Modified Clinical Rule / Calculation** | Update the corresponding `REQ-F-XX` entry (e.g. interval formulas, spotting thresholds, scale ranges). | `docs/SRS.md` — Section 3.1 |
+| **Altered Non-Functional Constraint** | Update relevant NFR entry (`NFR-PRI-XX`, `NFR-SEC-XX`, `NFR-PERF-XX`, `NFR-THRD-XX`, `NFR-REL-XX`). | `docs/SRS.md` — Section 3.3 |
+| **Verification / Architecture Traceability** | **Mandatory**: Add or update the mapping in Section 4 (*Verification & Traceability Matrix*), linking the requirement ID to its implementation class, Room DAO, and test suite. | `docs/SRS.md` — Section 4 |
+| **New Feature Directory Created** | Register the new feature in `docs/features/README.md` (*Master Feature Catalog*) with status badges and links to all 3 documents. | `docs/features/README.md`<br>`README.md` |
+
+---
+
+## 11. Agent Verification Checklist Before Concluding Work
 
 Before completing any task or pull request, agents must verify:
 
@@ -415,4 +445,7 @@ Before completing any task or pull request, agents must verify:
 - [ ] **State Flow Hygiene**: ViewModel states use `SharingStarted.WhileSubscribed(5000)` to prevent background flow leaks.
 - [ ] **Compose Previews**: UI components have working `@Preview` annotations with mock data.
 - [ ] **Canvas Performance**: Custom Canvas drawing (`BbtTrendChart`, `CycleLengthChart`) avoids object allocations in `DrawScope`.
-- [ ] **Documentation Integrity**: Any algorithmic or architectural changes are mirrored in `README.md`, `AGENTS.md`, and `docs/CYCLE_PREDICTION_ENGINE.md`.
+- [ ] **Feature Documentation Synchronized**: Any modified feature has its `README.md`, `code-touch-map.md`, and `data-flow.md` updated to match current code.
+- [ ] **SRS Synchronized**: Any added, modified, or re-scoped requirement is updated in `docs/SRS.md` with requirement IDs and mapped in the Section 4 Traceability Matrix.
+- [ ] **Master Catalog Updated**: Any newly introduced feature directory is indexed in `docs/features/README.md`.
+- [ ] **Documentation Integrity**: Algorithmic and architectural changes are mirrored across `README.md`, `AGENTS.md`, and `docs/CYCLE_PREDICTION_ENGINE.md`.
